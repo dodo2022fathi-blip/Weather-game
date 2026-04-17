@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة ترتيب كلمات الطقس</title>
+    <style>
+        /* تنسيقات واجهة اللعبة */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e0f7fa; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; direction: rtl; }
+        .game-container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; width: 350px; border: 4px solid #4fc3f7; }
+        #weather-icon { font-size: 100px; margin-bottom: 10px; }
+        .scrambled-letters { font-size: 28px; font-weight: bold; letter-spacing: 8px; color: #0277bd; margin-bottom: 20px; text-transform: uppercase; background: #f1f8e9; padding: 10px; border-radius: 10px; }
+        input { padding: 12px; font-size: 20px; border: 2px solid #b3e5fc; border-radius: 10px; width: 80%; text-align: center; margin-bottom: 20px; outline: none; }
+        button { padding: 12px 25px; font-size: 18px; background-color: #00bcd4; color: white; border: none; border-radius: 10px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        button:hover { background-color: #0097a7; transform: scale(1.05); }
+        #message { margin-top: 20px; font-weight: bold; min-height: 25px; font-size: 1.2em; }
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h2 style="color: #01579b;">رتب حروف الكلمة!</h2>
+    <div id="weather-icon">☀️</div>
+    <div class="scrambled-letters" id="scrambled-word">NNUSY</div>
+    
+    <input type="text" id="user-input" placeholder="اكتب الكلمة هنا..." autocomplete="off">
+    <br>
+    <button onclick="checkAnswer()">تحقق من الإجابة</button>
+    <div id="message"></div>
+</div>
+
+<script>
+    // قائمة الكلمات والصور (الإيموجي)
+    const weatherData = [
+        { word: "SUNNY", icon: "☀️" },
+        { word: "RAINY", icon: "🌧️" },
+        { word: "WINDY", icon: "💨" },
+        { word: "CLOUDY", icon: "☁️" },
+        { word: "SNOWY", icon: "❄️" },
+        { word: "STORM", icon: "⚡" }
+    ];
+
+    let currentObj = {};
+
+    // وظيفة لبعثرة الحروف
+    function scrambleWord(word) {
+        let arr = word.split('');
+        for (let i = arr.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        let scrambled = arr.join('');
+        return scrambled === word ? scrambleWord(word) : scrambled;
+    }
+
+    // بدء جولة جديدة
+    function nextRound() {
+        currentObj = weatherData[Math.floor(Math.random() * weatherData.length)];
+        document.getElementById('weather-icon').innerText = currentObj.icon;
+        document.getElementById('scrambled-word').innerText = scrambleWord(currentObj.word);
+        document.getElementById('user-input').value = "";
+        document.getElementById('message').innerText = "";
+    }
+
+    // التحقق من صحة الإجابة
+    function checkAnswer() {
+        const val = document.getElementById('user-input').value.toUpperCase().trim();
+        const msg = document.getElementById('message');
+
+        if (val === currentObj.word) {
+            msg.innerText = "إجابة رائعة! 🌟";
+            msg.className = "success";
+            setTimeout(nextRound, 2000); // الانتقال للكلمة التالية بعد ثانيتين
+        } else {
+            msg.innerText = "حاول مرة أخرى! ❌";
+            msg.className = "error";
+        }
+    }
+
+    // تشغيل اللعبة عند التحميل
+    window.onload = nextRound;
+</script>
+
+</body>
+</html>
